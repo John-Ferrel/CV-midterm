@@ -85,7 +85,11 @@ def validate_model(model, validation_loader, criterion):
     val_acc = 100 * correct / total  
     return val_loss, val_acc
   
-# 假设num_epochs是你要训练的轮数  
+
+def test_model(model, test_loader, criterion):  
+    test_loss, test_acc = validate_model(model, test_loader, criterion)  
+    print(f'Test Loss: {test_loss:.4f}, Test Accuracy: {test_acc:.4f}')  
+    return test_acc
 
 # 2. 数据预处理和加载  
 
@@ -269,18 +273,27 @@ num_epochs = 200
 hyperparams = [
     {'m_lr_pre': 0.00001, 'm_lr_new': 0.01, 'm_momentum': 0.9, 'm_weight_decay': 0, 'd_lr': 0.01, 'd_momentum': 0.9, 'd_weight_decay': 0},
 ]
+if settings.MOD == 'train':
+    for hyperparam in hyperparams:  
+        m_lr_pre = hyperparam['m_lr_pre']
+        m_lr_new = hyperparam['m_lr_new']
+        m_momentum = hyperparam['m_momentum']
+        m_weight_decay = hyperparam['m_weight_decay']
+        d_lr = hyperparam['d_lr']
+        d_momentum = hyperparam['d_momentum']
+        d_weight_decay = hyperparam['d_weight_decay']
+        # tensorboard
+        
+        # 训练模型
+        modified_train()
+        direct_train()
 
-for hyperparam in hyperparams:  
-    m_lr_pre = hyperparam['m_lr_pre']
-    m_lr_new = hyperparam['m_lr_new']
-    m_momentum = hyperparam['m_momentum']
-    m_weight_decay = hyperparam['m_weight_decay']
-    d_lr = hyperparam['d_lr']
-    d_momentum = hyperparam['d_momentum']
-    d_weight_decay = hyperparam['d_weight_decay']
-    # tensorboard
-    
-    # 训练模型
-    modified_train()
-    direct_train()
-  
+
+if settings.MOD == 'test':
+    # 在测试集上评估模型性能
+    model = models.resnet18(weights=False)
+    model.load_state_dict(torch.load('./model/best_model.pt'))
+    _, test_acc = test_model(model, test_dataloader, criterion)
+    print(f'Test Accuracy: {test_acc:.4f}')
+
+

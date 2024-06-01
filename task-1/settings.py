@@ -34,3 +34,5 @@ SAVE_EPOCH = 10
 
 #input image size for network
 IMAGE_SIZE = 224
+
+MOD = 'train' # or 'test'
